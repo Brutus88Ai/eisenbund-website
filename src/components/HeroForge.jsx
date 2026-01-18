@@ -1,20 +1,13 @@
 import React from 'react';
-import videoBg from '../../Dystopian_Industrial_Nightscape_Generated.mp4';
-import logoImg from '../../logo (2).png';
+
+// Logo als externe URL oder Platzhalter
+const logoImg = 'https://via.placeholder.com/400x400/1c1917/ea580c?text=EISENBUND';
 
 const HeroForge = () => (
     <div className="flex flex-col items-center justify-center min-h-[80vh] relative overflow-hidden p-6 text-stone-300">
-        {/* Video Background - NO FILTERS, FULL OPACITY */}
-        <div className="absolute inset-0 pointer-events-none">
-            <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-            >
-                <source src={videoBg} type="video/mp4" />
-            </video>
+        {/* Dark Industrial Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-stone-900 via-stone-950 to-black">
+            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/dark-metal.png')]"></div>
         </div>
 
         <div className="z-10 text-center relative flex flex-col items-center">

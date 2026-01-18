@@ -1,6 +1,8 @@
 import React from 'react';
 import { Play, Pause, Hammer, AlertTriangle, ExternalLink } from 'lucide-react';
-import coverImg from '../../Gemini_Generated_Image_l3ufugl3ufugl3uf.png';
+
+// Cover als Platzhalter
+const coverImg = 'https://via.placeholder.com/400x400/1c1917/ea580c?text=BETON+%26+BLUT';
 
 const tracks = [
     { id: 1, title: "HOCHOFEN (INIT)", hardness: "4.5", duration: "03:42" },
