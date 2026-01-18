@@ -44,17 +44,17 @@ const IDCardGenerator = () => {
     return (
         <div className="min-h-screen relative overflow-hidden">
             {/* Background Video */}
-            <div className="absolute inset-0 pointer-events-none -z-10">
+            <div className="absolute inset-0 pointer-events-none">
                 <video
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className="w-full h-full object-cover opacity-40 fixed top-0 left-0 h-screen"
+                    className="w-full h-full object-cover opacity-40"
                 >
                     <source src={videoBg} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-stone-900/70 fixed top-0 left-0 h-screen"></div>
+                <div className="absolute inset-0 bg-stone-900/70"></div>
             </div>
 
             <div className="max-w-md mx-auto pt-10 px-6 pb-24 text-stone-300 relative z-10">

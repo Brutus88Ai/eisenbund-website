@@ -4,19 +4,19 @@ import { Anchor } from 'lucide-react';
 const videoBg = '/assets/sparks.mp4';
 
 const Manifest = () => (
-    <div className="max-w-3xl mx-auto pt-10 px-6 pb-24 text-center md:text-left text-stone-300 relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-stone-950 font-mono text-stone-300 selection:bg-orange-900">
         {/* Background Video */}
-        <div className="absolute inset-0 pointer-events-none -z-10">
+        <div className="absolute inset-0 pointer-events-none">
             <video
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover opacity-50 fixed top-0 left-0 h-screen"
+                className="w-full h-full object-cover opacity-50"
             >
                 <source src={videoBg} type="video/mp4" />
             </video>
-            <div className="absolute inset-0 bg-stone-900/60 fixed top-0 left-0 h-screen"></div>
+            <div className="absolute inset-0 bg-stone-900/60"></div>
         </div>
 
         <div className="border-t border-b border-stone-700 py-12 relative bg-stone-900/30">

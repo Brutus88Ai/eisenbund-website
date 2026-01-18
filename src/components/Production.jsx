@@ -12,17 +12,17 @@ const Production = ({ isPlaying, setIsPlaying }) => {
     return (
         <div className="max-w-4xl mx-auto pt-10 px-6 pb-24 text-stone-300 relative overflow-hidden">
             {/* Background Video */}
-            <div className="absolute inset-0 pointer-events-none -z-10">
+            <div className="absolute inset-0 pointer-events-none">
                 <video
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className="w-full h-full object-cover opacity-50 fixed top-0 left-0 h-screen"
+                    className="w-full h-full object-cover opacity-50"
                 >
                     <source src={videoBg} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-stone-900/60 fixed top-0 left-0 h-screen"></div>
+                <div className="absolute inset-0 bg-stone-900/60"></div>
             </div>
 
             <h2 className="font-industrial text-5xl text-stone-200 mb-8 border-l-8 border-orange-600 pl-4 drop-shadow-lg relative z-10">
