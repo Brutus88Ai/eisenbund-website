@@ -31,6 +31,4 @@ del push_to_github.bat
 
 echo.
 echo ==========================================
-echo   FERTIG! Alles repariert und aufgeraeumt.
-echo ==========================================
-pause
+echo DONE_AUTO

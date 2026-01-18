@@ -12,11 +12,11 @@ const Manifest = () => (
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover opacity-20 fixed top-0 left-0 h-screen"
+                className="w-full h-full object-cover opacity-50 fixed top-0 left-0 h-screen"
             >
                 <source src={videoBg} type="video/mp4" />
             </video>
-            <div className="absolute inset-0 bg-stone-900/90 fixed top-0 left-0 h-screen"></div>
+            <div className="absolute inset-0 bg-stone-900/60 fixed top-0 left-0 h-screen"></div>
         </div>
 
         <div className="border-t border-b border-stone-700 py-12 relative bg-stone-900/30">
