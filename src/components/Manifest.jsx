@@ -1,8 +1,24 @@
 import React from 'react';
 import { Anchor } from 'lucide-react';
 
+const videoBg = '/assets/sparks.mp4';
+
 const Manifest = () => (
-    <div className="max-w-3xl mx-auto pt-10 px-6 pb-24 text-center md:text-left text-stone-300">
+    <div className="max-w-3xl mx-auto pt-10 px-6 pb-24 text-center md:text-left text-stone-300 relative overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 pointer-events-none -z-10">
+            <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover opacity-20 fixed top-0 left-0 h-screen"
+            >
+                <source src={videoBg} type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-stone-900/90 fixed top-0 left-0 h-screen"></div>
+        </div>
+
         <div className="border-t border-b border-stone-700 py-12 relative bg-stone-900/30">
             <div className="absolute top-0 left-0 bg-orange-600 text-black text-xs font-bold px-2 py-1">PROTOKOLL 0.1</div>
 

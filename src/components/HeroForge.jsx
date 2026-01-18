@@ -1,13 +1,23 @@
 import React from 'react';
 
-// Logo als externe URL oder Platzhalter
-const logoImg = 'https://via.placeholder.com/400x400/1c1917/ea580c?text=EISENBUND';
+// Assets from public folder
+const videoBg = '/assets/schmiede.mp4';
+const logoImg = '/assets/logo.png';
 
 const HeroForge = () => (
     <div className="flex flex-col items-center justify-center min-h-[80vh] relative overflow-hidden p-6 text-stone-300">
-        {/* Dark Industrial Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-stone-900 via-stone-950 to-black">
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/dark-metal.png')]"></div>
+        {/* Video Background */}
+        <div className="absolute inset-0 pointer-events-none">
+            <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover opacity-60"
+            >
+                <source src={videoBg} type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-gradient-to-b from-stone-900/50 via-transparent to-stone-900"></div>
         </div>
 
         <div className="z-10 text-center relative flex flex-col items-center">
@@ -47,6 +57,20 @@ const HeroForge = () => (
                     <span className="font-mono">2400 BAR</span>
                 </div>
             </div>
+            {/* --- SPOTIFY PLAYER --- */}
+            <div className="mt-12 w-full max-w-md mx-auto panel-border bg-black/80 p-1 shadow-[0_0_30px_rgba(234,88,12,0.3)]">
+                <iframe
+                    style={{ borderRadius: '0px' }}
+                    src="https://open.spotify.com/embed/artist/50VTmE7iaxUVHGJgyNFEv6?utm_source=generator&theme=0"
+                    width="100%"
+                    height="152"
+                    frameBorder="0"
+                    allowFullScreen=""
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                ></iframe>
+            </div>
+
         </div>
     </div>
 );
