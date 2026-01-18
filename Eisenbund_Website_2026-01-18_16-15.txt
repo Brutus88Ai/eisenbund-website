@@ -1,0 +1,18 @@
+# Eisenbund Website Development Session - 2026-01-18
+
+## Status
+- Initialized React + Vite + Tailwind CSS project manually.
+- Secured existing media files (video/images) into `public/`.
+- Created component structure:
+    - Navigation.jsx
+    - HeroForge.jsx (Video Background)
+    - Production.jsx (Music List)
+    - Manifest.jsx (About)
+    - IDCardGenerator.jsx (Interactive)
+    - App.jsx (Main Layout)
+- Implemented core industrial design (fonts, colors, metal textures).
+- Ready for deployment (Vercel compatible).
+
+## Next Steps
+- Run `npm run build` to verify production build.
+- Connect to Vercel for hosting.
