@@ -43,6 +43,30 @@ const Shop = ({ onNavigate }) => {
         },
         {
             id: 5,
+            title: 'TASSE "MECHANIC"',
+            price: '20,00 €',
+            image: '/assets/shop/mug_wrench.jpg',
+            category: 'ACCESSOIRES',
+            desc: 'Keramiktasse mit Griff in Schraubenschlüssel-Optik. Für das Schmieröl am Morgen.'
+        },
+        {
+            id: 6,
+            title: 'TASSE "MASCHINENMUSIK"',
+            price: '18,00 €',
+            image: '/assets/shop/mug_black.png',
+            category: 'ACCESSOIRES',
+            desc: 'Mattschwarze Tasse mit Eisenbund-Logo. Spülmaschinenfest. 300ml.'
+        },
+        {
+            id: 7,
+            title: 'KEYCHAIN "GEAR CODE"',
+            price: '15,00 €',
+            image: '/assets/shop/keychain_metal.jpg',
+            category: 'ACCESSOIRES',
+            desc: 'Massiver Edelstahlanhänger. Handgefertigt. Unverwüstlich.'
+        },
+        {
+            id: 8,
             title: 'ALBUM "HÄRTEGRAD" (CD)',
             price: '15,00 €',
             image: '/assets/haertegrad.jpg',

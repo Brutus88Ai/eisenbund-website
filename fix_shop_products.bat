@@ -1,12 +1,12 @@
 @echo off
 echo ==========================================
-echo   EISENBUND SHOP AUTH UPDATE (GOOGLE)
+echo   EISENBUND SHOP PRODUCT UPDATE
 echo ==========================================
 cd /d "%~dp0"
 
-echo [1/2] Staging All Updates (Images, Auth, Code)...
+echo [1/2] Adding new product images...
 git add .
-git commit -m "Feat: Google Auth Simulation + Shop Updates"
+git commit -m "Feat: New Products (Mugs, Keychain)"
 
 echo [2/2] Uploading...
 git push origin main
@@ -14,7 +14,6 @@ git push origin main
 echo.
 echo ==========================================
 echo   FERTIG!
-echo   Google Simulation ist aktiv.
-echo   (Seite Refresh)
+echo   Neue Produkte sind live.
 echo ==========================================
 pause
