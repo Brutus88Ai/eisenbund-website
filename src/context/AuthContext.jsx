@@ -12,7 +12,8 @@ export const AuthProvider = ({ children }) => {
         // Check for active session
         const session = localStorage.getItem('eb_session');
         if (session) {
-            const userData = JSON.parse(localStorage.getItem('eb_users') || '[]').find(u => u.email === session);
+            const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+            const userData = users.find(u => u.email === session);
             if (userData) {
                 setUser(userData);
             }
@@ -30,6 +31,36 @@ export const AuthProvider = ({ children }) => {
             return { success: true };
         }
         return { success: false, error: 'Zugangsdaten ungültig.' };
+    };
+
+    const loginWithGoogle = async () => {
+        setLoading(true);
+        // Simulate Network Delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const googleUser = {
+            id: 'google_' + Date.now(),
+            name: 'Google User',
+            email: 'google-user@gmail.com',
+            street: 'Silicon Valley 1',
+            city: '90210 Mountain View',
+            provider: 'google',
+            orders: []
+        };
+
+        // Check if exists or create
+        const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+        const existing = users.find(u => u.email === googleUser.email);
+
+        if (!existing) {
+            users.push(googleUser);
+            localStorage.setItem('eb_users', JSON.stringify(users));
+        }
+
+        setUser(existing || googleUser);
+        localStorage.setItem('eb_session', googleUser.email);
+        setLoading(false);
+        return { success: true };
     };
 
     const register = (userData) => {
