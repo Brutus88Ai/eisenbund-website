@@ -101,7 +101,7 @@ const Shop = ({ onNavigate }) => {
                 {/* Header */}
                 <header className="bg-black/90 p-6 text-center border-b-2 border-[#8b0000] backdrop-blur-sm sticky top-0 z-50 shadow-2xl">
                     <h1 className="m-0 text-3xl md:text-5xl tracking-[8px] text-white font-industrial uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                        ZEUGHAUS
+                        MERCH SHOP
                     </h1>
                     <nav className="mt-4 flex justify-center gap-8 text-xs md:text-sm font-bold uppercase tracking-widest">
                         <a href="https://www.eisenbund.de/" className="text-[#8b0000] hover:text-white transition-colors no-underline flex items-center gap-2">
