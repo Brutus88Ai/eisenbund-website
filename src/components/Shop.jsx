@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Filter } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 const Shop = () => {
     const [category, setCategory] = useState('ALL');
+    const { addToCart, cartCount, toggleCart } = useCart();
 
     const products = [
         {
@@ -25,7 +27,7 @@ const Shop = () => {
             id: 3,
             title: 'BEANIE "MONOLITH"',
             price: '25,00 €',
-            image: '/assets/shop/beanie_black.jpg',
+            image: '/assets/shop/beanie_grey.jpg', // Using grey beanie as explicitly requested via image upload
             category: 'ACCESSOIRES',
             desc: 'Gerippter Strick. Gesticktes EB-Emblem. Hält die Gedanken warm und fokussiert.'
         },
@@ -80,9 +82,12 @@ const Shop = () => {
                             &lt; BACK TO BASE
                         </a>
                         <span className="text-[#333]">|</span>
-                        <a href="#" className="text-[#8b0000] hover:text-white transition-colors no-underline flex items-center gap-2">
-                            WARENKORB (0)
-                        </a>
+                        <button
+                            onClick={toggleCart}
+                            className="text-[#8b0000] hover:text-white transition-colors no-underline flex items-center gap-2"
+                        >
+                            WARENKORB ({cartCount})
+                        </button>
                     </nav>
                 </header>
 
@@ -131,7 +136,10 @@ const Shop = () => {
 
                                         <div className="mt-auto">
                                             <span className="block text-2xl text-[#8b0000] my-3 font-bold font-industrial tracking-widest">{product.price}</span>
-                                            <button className="w-full bg-[#333] text-white py-3 border border-[#8b0000] cursor-pointer hover:bg-[#8b0000] transition-all uppercase font-bold text-xs tracking-[0.2em] flex items-center justify-center gap-2">
+                                            <button
+                                                onClick={() => addToCart(product)}
+                                                className="w-full bg-[#333] text-white py-3 border border-[#8b0000] cursor-pointer hover:bg-[#8b0000] transition-all uppercase font-bold text-xs tracking-[0.2em] flex items-center justify-center gap-2"
+                                            >
                                                 <ShoppingCart size={14} /> IN DEN WARENKORB
                                             </button>
                                         </div>
