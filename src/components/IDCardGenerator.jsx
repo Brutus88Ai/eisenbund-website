@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Activity, ExternalLink, Cpu, Facebook, Music, Video } from 'lucide-react';
+import React from 'react';
+import { ExternalLink, Facebook, Music, Video } from 'lucide-react';
 
 const socialLinks = [
     {
@@ -28,19 +28,6 @@ const socialLinks = [
 const videoBg = '/assets/sparks.mp4';
 
 const IDCardGenerator = () => {
-    const [name, setName] = useState('');
-    const [generated, setGenerated] = useState(false);
-    const [idNumber, setIdNumber] = useState('');
-
-    const generateID = (e) => {
-        e.preventDefault();
-        if (!name) return;
-        // Generate random industrial ID
-        const randomID = Math.floor(1000 + Math.random() * 9000);
-        setIdNumber(`#EB-${randomID}`);
-        setGenerated(true);
-    };
-
     return (
         <div className="min-h-screen relative overflow-hidden">
             {/* Background Video */}
@@ -58,8 +45,8 @@ const IDCardGenerator = () => {
             </div>
 
             <div className="max-w-md mx-auto pt-10 px-6 pb-24 text-stone-300 relative z-10">
-                <h2 className="font-industrial text-4xl text-center text-stone-200 mb-2">DEM BUND BEITRETEN</h2>
-                <p className="text-center text-stone-500 text-xs mb-8 uppercase tracking-widest">Registrierung für menschliches Personal</p>
+                <h2 className="font-industrial text-4xl text-center text-stone-200 mb-2">DER BUND</h2>
+                <p className="text-center text-stone-500 text-xs mb-8 uppercase tracking-widest">Offizielle Kanäle</p>
 
                 {/* NEW: Social Media Hub inside "Der Bund" */}
                 <div className="mb-12">
@@ -94,75 +81,56 @@ const IDCardGenerator = () => {
                     </div>
                 </div>
 
-                <div className="border-b border-stone-800 pb-2 mb-6">
-                    <span className="text-stone-500 font-mono text-xs tracking-widest uppercase">ID-KARTEN DRUCKER</span>
+
+
+                {/* LEGAL SECTION */}
+                <div className="mt-16 border-t border-stone-800 pt-8">
+                    <details className="group">
+                        <summary className="cursor-pointer list-none flex items-center justify-between text-stone-600 hover:text-orange-500 transition-colors">
+                            <span className="text-xs font-mono uppercase tracking-[0.2em]">/// RECHTLICHE PROTOKOLLE (IMPRESSUM & DATENSCHUTZ)</span>
+                            <span className="text-xs font-mono group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+
+                        <div className="mt-4 text-xs text-stone-500 font-mono space-y-4 p-4 border border-stone-800 bg-stone-900/50">
+                            <div>
+                                <h4 className="text-stone-300 font-bold mb-1">IMPRESSUM (Angaben gemäß § 5 TMG)</h4>
+                                <p>
+                                    Verantwortlich:<br />
+                                    Gegenwind Records<br />
+                                    Bahnhofstr. 249<br />
+                                    66793 Saarwellingen<br />
+                                    Deutschland
+                                </p>
+                                <p className="mt-2">
+                                    Kontakt:<br />
+                                    E-Mail: pascalhares@gmail.com
+                                </p>
+                            </div>
+
+                            <div>
+                                <h4 className="text-stone-300 font-bold mb-1">DATENSCHUTZ</h4>
+                                <p>
+                                    1. Datenerfassung: Wir speichern keine persönlichen Daten auf unseren Servern.
+                                    Die Nutzung des ID-Generators erfolgt rein lokal in Ihrem Browser (Client-Side).
+                                    Es werden keine Eingaben an eine Datenbank übertragen.
+                                </p>
+                                <p className="mt-2">
+                                    2. Hosting: Diese Seite wird über Vercel gehostet. Vercel erhebt temporäre Server-Logs (IP-Adressen) zur Gewährleistung der Sicherheit.
+                                </p>
+                                <p className="mt-2">
+                                    3. Externe Dienste: Eingebettete Inhalte (Spotify, Videos) können Daten an die jeweiligen Anbieter übertragen (IP-Adresse, Browser-Daten), sobald sie geladen werden.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h4 className="text-stone-300 font-bold mb-1">DISCLAIMER</h4>
+                                <p>
+                                    Dies ist ein künstlerisches Projekt. Eisenbund ist eine fiktive Entität / Band.
+                                </p>
+                            </div>
+                        </div>
+                    </details>
                 </div>
-
-                {!generated ? (
-                    <form onSubmit={generateID} className="bg-stone-900 panel-border p-8 space-y-6">
-                        <div>
-                            <label className="block text-orange-500 text-xs uppercase mb-2 font-bold">Bezeichnung (Name)</label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="w-full bg-black border border-stone-700 p-3 text-stone-200 focus:outline-none focus:border-orange-500 font-mono uppercase focus:ring-1 focus:ring-orange-500/50"
-                                placeholder="NAME EINGEBEN"
-                            />
-                        </div>
-                        <button type="submit" className="w-full btn-industrial py-4 text-stone-200 font-bold hover:text-orange-500 uppercase tracking-widest flex items-center justify-center gap-2 hover:border-orange-500 transition-all">
-                            <Activity size={16} />
-                            ID Generieren
-                        </button>
-                    </form>
-                ) : (
-                    <div className="animate-in fade-in zoom-in duration-500">
-                        <div className="metal-texture panel-border p-6 relative overflow-hidden shadow-2xl">
-                            {/* Card Design */}
-                            <div className="absolute top-0 right-0 p-4 opacity-20 text-stone-900">
-                                <Cpu size={80} />
-                            </div>
-
-                            <div className="flex justify-between items-start border-b border-stone-600/50 pb-4 mb-4">
-                                <div>
-                                    <h3 className="font-industrial text-3xl text-white drop-shadow-md">WERKSAUSWEIS</h3>
-                                    <span className="text-orange-500 text-xs tracking-[0.3em] font-bold">EISENBUND</span>
-                                </div>
-                                <div className="h-12 w-12 bg-stone-800 border border-stone-600 flex items-center justify-center shadow-inner">
-                                    <div className="w-8 h-8 bg-stone-900/50"></div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4 font-mono text-sm relative z-10">
-                                <div>
-                                    <span className="block text-stone-400 text-[10px] uppercase">Einheit / Name</span>
-                                    <span className="text-white text-xl uppercase font-bold text-shadow-sm">{name}</span>
-                                </div>
-                                <div>
-                                    <span className="block text-stone-400 text-[10px] uppercase">Arbeiternummer</span>
-                                    <span className="text-orange-500 text-2xl font-bold tracking-widest drop-shadow-sm">{idNumber}</span>
-                                </div>
-                                <div className="flex justify-between items-end mt-6">
-                                    <div className="text-[10px] text-stone-500">
-                                        ZUGRIFFSEBENE: <span className="text-white font-bold">STANDARD</span>
-                                    </div>
-                                    <div className="w-16 h-16 border border-stone-600 p-1 bg-white">
-                                        <img src="/api/placeholder/64/64" alt="QR" className="w-full h-full" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-orange-600 to-orange-800"></div>
-                        </div>
-
-                        <button
-                            onClick={() => setGenerated(false)}
-                            className="mt-6 w-full text-xs text-stone-500 hover:text-stone-300 uppercase tracking-widest hover:underline"
-                        >
-                            Neuen Ausweis beantragen
-                        </button>
-                    </div>
-                )}
 
             </div>
         </div>

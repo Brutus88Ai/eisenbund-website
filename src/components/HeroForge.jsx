@@ -2,7 +2,7 @@ import React from 'react';
 
 // Assets from public folder
 const videoBg = '/assets/schmiede.mp4';
-const logoImg = '/assets/logo.png';
+const logoVideo = '/assets/logo_video.mp4';
 
 const HeroForge = () => (
     <div className="flex flex-col items-center justify-center min-h-[80vh] relative overflow-hidden p-6 text-stone-300">
@@ -25,20 +25,20 @@ const HeroForge = () => (
                 SYSTEM: ONLINE
             </div>
 
-            {/* --- LIVING LOGO SECTION --- */}
+            {/* --- LIVING LOGO SECTION (VIDEO) --- */}
             <div className="relative mb-8 transform hover:scale-105 transition-transform duration-500">
                 {/* Subtle glow just to make it pop, but not darken */}
                 <div className="absolute inset-0 bg-orange-600/20 blur-[50px] rounded-full animate-pulse"></div>
 
-                <img
-                    src={logoImg}
-                    alt="EISENBUND LOGO"
-                    className="w-64 md:w-96 h-auto object-contain living-logo relative z-10"
-                    onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.style.display = 'none';
-                    }}
-                />
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-64 md:w-96 h-auto object-contain living-logo relative z-10 rounded-lg shadow-[0_0_30px_rgba(234,88,12,0.3)]"
+                >
+                    <source src={logoVideo} type="video/mp4" />
+                </video>
             </div>
 
             <div className="h-1 w-64 bg-gradient-to-r from-transparent via-orange-500 to-transparent my-4 shadow-[0_0_20px_rgba(234,88,12,1)]"></div>
