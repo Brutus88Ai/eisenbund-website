@@ -19,9 +19,9 @@ if exist "public\assets\shop_bg.mp4" (
     copy "C:\Users\pasca\Desktop\Eisenbund band\fotosvideos\grok-video-c9c7007d-7311-4e0e-9c64-7710d64eac1f.mp4" "public\assets\shop_bg.mp4"
 )
 
-echo [2/3] Adding Shop Video & Fixes...
+echo [2/3] Adding Shop Video & Domain Logic...
 git add .
-git commit -m "Feature: Shop Video Background & Final Fixes"
+git commit -m "Feature: Shop Video & Domain Routing Support"
 
 echo [3/3] Uploading...
 git push origin main
@@ -29,9 +29,10 @@ git push origin main
 echo.
 echo ==========================================
 echo   FERTIG!
-echo   Lade die Seite in 2 Minuten neu (STRG + F5).
-echo   Startseite: Video-Logo
-echo   Shop: Video-Hintergrund
-echo   Der Bund: Repariert
+echo   1. Startseite hat Video-Logo.
+echo   2. Shop hat Video-Hintergrund.
+echo   3. 'eisenbund.shop' Domain wird unterstuetzt (oeffnet Shop direkt).
+echo.
+echo   Bitte Seite neu laden (STRG + F5).
 echo ==========================================
 pause
