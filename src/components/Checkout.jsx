@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { ArrowLeft, Check, CreditCard, User, LogIn } from 'lucide-react';
 
-const Checkout = ({ onBack }) => {
+const Checkout = ({ onBack, onNavigate }) => {
     const { cartItems, cartTotal, clearCart } = useCart();
+    const { user } = useAuth();
     const [step, setStep] = useState(1); // 1: Method, 2: Form, 3: Success
     const [authMethod, setAuthMethod] = useState(null); // 'guest' | 'login'
 
@@ -14,6 +16,20 @@ const Checkout = ({ onBack }) => {
         street: '',
         city: ''
     });
+
+    // Auto-fill if logged in
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                email: user.email || '',
+                name: user.name || '',
+                street: user.street || '',
+                city: user.city || ''
+            });
+            setStep(2); // Skip method selection if logged in
+            setAuthMethod('login');
+        }
+    }, [user]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -84,10 +100,9 @@ const Checkout = ({ onBack }) => {
                                 </button>
 
                                 <button
-                                    onClick={() => { setAuthMethod('login'); }}
-                                    className="p-8 border border-[#333] bg-[#1a1a1a] hover:border-[#8b0000] hover:bg-black transition-all text-center group relative overflow-hidden"
+                                    onClick={() => onNavigate('login')}
+                                    className="p-8 border border-[#333] bg-[#1a1a1a] hover:border-[#8b0000] hover:bg-black transition-all text-center group"
                                 >
-                                    <div className="absolute top-2 right-2 bg-stone-800 text-[10px] px-2 py-1 uppercase text-stone-400">Coming Soon</div>
                                     <LogIn size={32} className="mx-auto mb-4 text-stone-500 group-hover:text-[#8b0000]" />
                                     <span className="block text-white font-bold mb-2">LOGIN</span>
                                     <span className="text-xs text-stone-500">Mit Eisenbund-ID anmelden.</span>
@@ -106,6 +121,7 @@ const Checkout = ({ onBack }) => {
                                     <div>
                                         <label className="block text-xs text-stone-500 mb-1">E-MAIL ADRESSE *</label>
                                         <input required type="email"
+                                            value={formData.email}
                                             className="w-full bg-black border border-[#333] p-3 text-white focus:border-[#8b0000] outline-none transition-colors"
                                             onChange={e => setFormData({ ...formData, email: e.target.value })}
                                         />
@@ -113,6 +129,7 @@ const Checkout = ({ onBack }) => {
                                     <div>
                                         <label className="block text-xs text-stone-500 mb-1">VOLLSTÄNDIGER NAME *</label>
                                         <input required type="text"
+                                            value={formData.name}
                                             className="w-full bg-black border border-[#333] p-3 text-white focus:border-[#8b0000] outline-none transition-colors"
                                             onChange={e => setFormData({ ...formData, name: e.target.value })}
                                         />
@@ -122,6 +139,7 @@ const Checkout = ({ onBack }) => {
                                 <div>
                                     <label className="block text-xs text-stone-500 mb-1">STRASSE & HAUSNUMMER *</label>
                                     <input required type="text"
+                                        value={formData.street}
                                         className="w-full bg-black border border-[#333] p-3 text-white focus:border-[#8b0000] outline-none transition-colors"
                                         onChange={e => setFormData({ ...formData, street: e.target.value })}
                                     />
@@ -137,6 +155,7 @@ const Checkout = ({ onBack }) => {
                                     <div>
                                         <label className="block text-xs text-stone-500 mb-1">STADT *</label>
                                         <input required type="text"
+                                            value={formData.city}
                                             className="w-full bg-black border border-[#333] p-3 text-white focus:border-[#8b0000] outline-none transition-colors"
                                             onChange={e => setFormData({ ...formData, city: e.target.value })}
                                         />

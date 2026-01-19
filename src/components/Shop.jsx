@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Filter } from 'lucide-react';
+import { ShoppingCart, Filter, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
-const Shop = () => {
+const Shop = ({ onNavigate }) => {
     const [category, setCategory] = useState('ALL');
     const { addToCart, cartCount, toggleCart } = useCart();
+    const { user } = useAuth();
 
     const products = [
         {
@@ -27,7 +29,7 @@ const Shop = () => {
             id: 3,
             title: 'BEANIE "MONOLITH"',
             price: '25,00 €',
-            image: '/assets/shop/beanie_grey.jpg', // Using grey beanie as explicitly requested via image upload
+            image: '/assets/shop/beanie_grey.jpg',
             category: 'ACCESSOIRES',
             desc: 'Gerippter Strick. Gesticktes EB-Emblem. Hält die Gedanken warm und fokussiert.'
         },
@@ -81,6 +83,16 @@ const Shop = () => {
                         <a href="https://www.eisenbund.de/" className="text-[#8b0000] hover:text-white transition-colors no-underline flex items-center gap-2">
                             &lt; BACK TO BASE
                         </a>
+                        <span className="text-[#333]">|</span>
+
+                        {/* AUTH BUTTON */}
+                        <button
+                            onClick={() => onNavigate(user ? 'account' : 'login')}
+                            className="text-[#8b0000] hover:text-white transition-colors no-underline flex items-center gap-2"
+                        >
+                            <User size={14} /> {user ? 'ACCOUNT' : 'LOGIN'}
+                        </button>
+
                         <span className="text-[#333]">|</span>
                         <button
                             onClick={toggleCart}

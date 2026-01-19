@@ -6,7 +6,11 @@ import IDCardGenerator from './components/IDCardGenerator';
 import Navigation from './components/Navigation';
 import Shop from './components/Shop';
 import Checkout from './components/Checkout';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import Account from './components/auth/Account';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 import CartSidebar from './components/CartSidebar';
 
 const App = () => {
@@ -37,25 +41,34 @@ const App = () => {
     };
 
     return (
-        <CartProvider>
-            <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-orange-500 selection:text-white" onClick={playSound}>
+        <AuthProvider>
+            <CartProvider>
+                <div className="min-h-screen bg-stone-950 text-stone-200 font-sans selection:bg-orange-500 selection:text-white" onClick={playSound}>
 
-                {activeTab !== 'checkout' && (
-                    <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
-                )}
+                    {/* Hide Main Navigation on Auth/Checkout Pages to keep focus */}
+                    {['login', 'register', 'account', 'checkout'].indexOf(activeTab) === -1 && (
+                        <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+                    )}
 
-                <CartSidebar onCheckout={handleCheckout} />
+                    <CartSidebar onCheckout={handleCheckout} />
 
-                <main>
-                    {activeTab === 'schmiede' && <HeroForge />}
-                    {activeTab === 'production' && <Production isPlaying={isPlaying} setIsPlaying={setIsPlaying} />}
-                    {activeTab === 'manifest' && <Manifest />}
-                    {activeTab === 'bund' && <IDCardGenerator />}
-                    {activeTab === 'shop' && <Shop />}
-                    {activeTab === 'checkout' && <Checkout onBack={() => setActiveTab('shop')} />}
-                </main>
-            </div>
-        </CartProvider>
+                    <main>
+                        {activeTab === 'schmiede' && <HeroForge />}
+                        {activeTab === 'production' && <Production isPlaying={isPlaying} setIsPlaying={setIsPlaying} />}
+                        {activeTab === 'manifest' && <Manifest />}
+                        {activeTab === 'bund' && <IDCardGenerator />}
+
+                        {activeTab === 'shop' && <Shop onNavigate={setActiveTab} />}
+
+                        {activeTab === 'checkout' && <Checkout onBack={() => setActiveTab('shop')} onNavigate={setActiveTab} />}
+
+                        {activeTab === 'login' && <Login onNavigate={setActiveTab} onBack={() => setActiveTab('shop')} />}
+                        {activeTab === 'register' && <Register onNavigate={setActiveTab} onBack={() => setActiveTab('login')} />}
+                        {activeTab === 'account' && <Account onNavigate={setActiveTab} />}
+                    </main>
+                </div>
+            </CartProvider>
+        </AuthProvider>
     );
 };
 
