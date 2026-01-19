@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { ArrowLeft, UserPlus, FileWarning } from 'lucide-react';
+import { ArrowLeft, UserPlus, FileWarning, Globe, Loader2 } from 'lucide-react';
 
 const Login = ({ onNavigate, onBack }) => {
-    const { login } = useAuth();
+    const { login, loginWithGoogle } = useAuth();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -15,6 +16,13 @@ const Login = ({ onNavigate, onBack }) => {
         } else {
             setError(res.error);
         }
+    };
+
+    const handleGoogleLogin = async () => {
+        setIsGoogleLoading(true);
+        await loginWithGoogle();
+        setIsGoogleLoading(false);
+        onNavigate('shop');
     };
 
     return (
@@ -30,6 +38,26 @@ const Login = ({ onNavigate, onBack }) => {
                         <FileWarning size={16} /> {error}
                     </div>
                 )}
+
+                {/* GOOGLE AUTH */}
+                <button
+                    onClick={handleGoogleLogin}
+                    disabled={isGoogleLoading}
+                    className="w-full bg-white text-stone-900 py-3 font-bold uppercase tracking-widest hover:bg-stone-200 transition-colors flex items-center justify-center gap-3 mb-6"
+                >
+                    {isGoogleLoading ? (
+                        <Loader2 className="animate-spin" size={18} />
+                    ) : (
+                        <Globe size={18} />
+                    )}
+                    Sign in with Google
+                </button>
+
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="h-px bg-[#333] flex-1"></div>
+                    <span className="text-stone-500 text-xs uppercase">Oder</span>
+                    <div className="h-px bg-[#333] flex-1"></div>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ArrowLeft, Check, CreditCard, User, LogIn } from 'lucide-react';
+import { ArrowLeft, Check, CreditCard, User, LogIn, Globe, Loader2 } from 'lucide-react';
 
 const Checkout = ({ onBack, onNavigate }) => {
     const { cartItems, cartTotal, clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, loginWithGoogle } = useAuth();
     const [step, setStep] = useState(1); // 1: Method, 2: Form, 3: Success
     const [authMethod, setAuthMethod] = useState(null); // 'guest' | 'login'
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -35,6 +36,12 @@ const Checkout = ({ onBack, onNavigate }) => {
         e.preventDefault();
         setStep(3);
         clearCart();
+    };
+
+    const handleGoogleCheckout = async () => {
+        setIsGoogleLoading(true);
+        await loginWithGoogle();
+        setIsGoogleLoading(false);
     };
 
     if (cartItems.length === 0 && step !== 3) {
@@ -108,6 +115,25 @@ const Checkout = ({ onBack, onNavigate }) => {
                                     <span className="text-xs text-stone-500">Mit Eisenbund-ID anmelden.</span>
                                 </button>
                             </div>
+
+                            {/* GOOGLE OPTION */}
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-[#333]"></div>
+                                </div>
+                                <div className="relative flex justify-center">
+                                    <span className="bg-[#0d0d0d] px-4 text-stone-500 text-xs uppercase">Oder</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleGoogleCheckout}
+                                disabled={isGoogleLoading}
+                                className="w-full p-4 bg-white text-stone-900 hover:bg-stone-200 transition-colors flex items-center justify-center gap-3 font-bold uppercase tracking-widest"
+                            >
+                                {isGoogleLoading ? <Loader2 className="animate-spin" size={20} /> : <Globe size={20} />}
+                                Sign in with Google
+                            </button>
                         </div>
                     )}
 
@@ -150,6 +176,7 @@ const Checkout = ({ onBack, onNavigate }) => {
                                         <label className="block text-xs text-stone-500 mb-1">PLZ *</label>
                                         <input required type="text"
                                             className="w-full bg-black border border-[#333] p-3 text-white focus:border-[#8b0000] outline-none transition-colors"
+                                            onChange={e => setFormData({ ...formData, city: e.target.value })}
                                         />
                                     </div>
                                     <div>
