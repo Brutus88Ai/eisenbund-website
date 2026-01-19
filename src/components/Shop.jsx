@@ -3,8 +3,11 @@ import { ShoppingCart, Filter, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
+import ShopLegal from './ShopLegal';
+
 const Shop = ({ onNavigate }) => {
     const [category, setCategory] = useState('ALL');
+    const [activeLegal, setActiveLegal] = useState(null); // 'agb', 'widerruf', 'datenschutz'
     const { addToCart, cartCount, toggleCart } = useCart();
     const { user } = useAuth();
 
@@ -81,6 +84,9 @@ const Shop = ({ onNavigate }) => {
 
     return (
         <div className="min-h-screen relative overflow-y-auto text-[#e0e0e0] font-mono selection:bg-[#8b0000] selection:text-white">
+
+            {/* Legal Overlay */}
+            <ShopLegal type={activeLegal} onClose={() => setActiveLegal(null)} />
 
             {/* Background Video */}
             <div className="fixed inset-0 pointer-events-none z-0">
@@ -187,6 +193,11 @@ const Shop = ({ onNavigate }) => {
                 </div>
 
                 <footer className="text-center p-12 mt-12 border-t border-[#333] text-[0.8rem] text-[#666] bg-black/90 backdrop-blur-sm tracking-widest">
+                    <div className="flex justify-center gap-6 mb-4 font-bold">
+                        <button onClick={() => setActiveLegal('agb')} className="hover:text-[#8b0000] transition-colors">AGB</button>
+                        <button onClick={() => setActiveLegal('widerruf')} className="hover:text-[#8b0000] transition-colors">WIDERRUF</button>
+                        <button onClick={() => setActiveLegal('datenschutz')} className="hover:text-[#8b0000] transition-colors">DATENSCHUTZ</button>
+                    </div>
                     &copy; 2026 EISENBUND LOGISTICS. <br />
                     ALLE PREISE INKL. MWST. ZZGL. VERSAND.
                 </footer>
