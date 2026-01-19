@@ -5,6 +5,7 @@ import HeroForge from './components/HeroForge';
 import Production from './components/Production';
 import Manifest from './components/Manifest';
 import IDCardGenerator from './components/IDCardGenerator';
+import Shop from './components/Shop';
 
 const socialLinks = [
     {
@@ -33,6 +34,13 @@ const socialLinks = [
 const App = () => {
     const [activeTab, setActiveTab] = useState('forge');
     const [isPlaying, setIsPlaying] = useState(null);
+
+    // Domain Routing: If coming from eisenbund.shop, go to Shop
+    useEffect(() => {
+        if (window.location.hostname.includes('shop')) {
+            setActiveTab('shop');
+        }
+    }, []);
 
     // Main container vibe logic
     const containerClass = isPlaying
@@ -69,6 +77,7 @@ const App = () => {
                 {activeTab === 'production' && <Production isPlaying={isPlaying} setIsPlaying={setIsPlaying} />}
                 {activeTab === 'manifest' && <Manifest />}
                 {activeTab === 'union' && <IDCardGenerator />}
+                {activeTab === 'shop' && <Shop />}
             </main>
 
             {/* Navigation */}

@@ -6,7 +6,7 @@ const Navigation = ({ activeTab, setActiveTab }) => {
         { id: 'production', label: 'PRODUKTION', icon: <Disc size={18} /> },
         { id: 'manifest', label: 'MANIFEST', icon: <FileText size={18} /> },
         { id: 'union', label: 'DER BUND', icon: <Users size={18} /> },
-        { id: 'shop', label: 'MERCH SHOP', icon: <ShoppingCart size={18} />, href: 'https://eisenbund.shop/', isExternal: true },
+        { id: 'shop', label: 'ZEUGHAUS', icon: <ShoppingCart size={18} /> },
     ];
 
     return (

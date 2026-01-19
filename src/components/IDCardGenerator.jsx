@@ -52,7 +52,7 @@ const IDCardGenerator = () => {
                 <div className="mb-12">
                     <div className="border-b border-stone-800 pb-2 mb-6 flex items-center justify-between">
                         <span className="text-stone-500 font-mono text-xs tracking-widest uppercase flex items-center gap-2">
-                            <Activity size={12} className="text-orange-500" /> NETZWERK-VERBINDUNGEN
+                            <ExternalLink size={12} className="text-orange-500" /> NETZWERK-VERBINDUNGEN
                         </span>
                         <span className="text-[10px] text-stone-600 font-bold">EXTERN</span>
                     </div>
