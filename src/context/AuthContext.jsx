@@ -12,10 +12,15 @@ export const AuthProvider = ({ children }) => {
         // Check for active session
         const session = localStorage.getItem('eb_session');
         if (session) {
-            const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
-            const userData = users.find(u => u.email === session);
-            if (userData) {
-                setUser(userData);
+            try {
+                const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+                const userData = users.find(u => u.email === session);
+                if (userData) {
+                    setUser(userData);
+                }
+            } catch (e) {
+                console.error("Auth Error: Corrupted User Data", e);
+                localStorage.removeItem('eb_users'); // Reset if corrupted
             }
         }
         setLoading(false);
@@ -49,7 +54,13 @@ export const AuthProvider = ({ children }) => {
         };
 
         // Check if exists or create
-        const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+        let users = [];
+        try {
+            users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+        } catch (e) {
+            users = [];
+        }
+
         const existing = users.find(u => u.email === googleUser.email);
 
         if (!existing) {
