@@ -13,6 +13,7 @@ const HeroForge = () => (
                 loop
                 muted
                 playsInline
+                preload="auto"
                 className="w-full h-full object-cover opacity-60"
             >
                 <source src={videoBg} type="video/mp4" />
@@ -35,6 +36,7 @@ const HeroForge = () => (
                     loop
                     muted
                     playsInline
+                    preload="auto"
                     className="w-64 md:w-96 h-auto object-contain living-logo relative z-10 rounded-lg shadow-[0_0_30px_rgba(234,88,12,0.3)]"
                 >
                     <source src={logoVideo} type="video/mp4" />

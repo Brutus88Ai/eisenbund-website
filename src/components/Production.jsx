@@ -18,6 +18,7 @@ const Production = ({ isPlaying, setIsPlaying }) => {
                     loop
                     muted
                     playsInline
+                    preload="auto"
                     className="w-full h-full object-cover opacity-50"
                 >
                     <source src={videoBg} type="video/mp4" />

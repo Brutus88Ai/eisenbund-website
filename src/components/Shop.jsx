@@ -11,6 +11,7 @@ const Shop = () => {
                     loop
                     muted
                     playsInline
+                    preload="auto"
                     className="w-full h-full object-cover opacity-50"
                 >
                     <source src="/assets/shop_bg.mp4" type="video/mp4" />

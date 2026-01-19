@@ -34,6 +34,7 @@ const Manifest = () => {
                     loop
                     muted
                     playsInline
+                    preload="auto"
                     className="w-full h-full object-cover opacity-50"
                 >
                     <source src={videoBg} type="video/mp4" />
@@ -98,8 +99,8 @@ const Manifest = () => {
                         key={index}
                         onClick={() => setActiveSection(index)}
                         className={`panel-border py-4 text-sm tracking-widest transition-all cursor-pointer font-bold ${activeSection === index
-                                ? 'bg-orange-600 text-black border-orange-500 shadow-[0_0_15px_rgba(234,88,12,0.4)]'
-                                : 'bg-stone-900 text-stone-400 hover:text-orange-500 hover:border-orange-500'
+                            ? 'bg-orange-600 text-black border-orange-500 shadow-[0_0_15px_rgba(234,88,12,0.4)]'
+                            : 'bg-stone-900 text-stone-400 hover:text-orange-500 hover:border-orange-500'
                             }`}
                     >
                         {section.title}
