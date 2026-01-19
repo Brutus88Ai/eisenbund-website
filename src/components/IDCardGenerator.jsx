@@ -103,7 +103,7 @@ const IDCardGenerator = () => {
                                 </p>
                                 <p className="mt-2">
                                     Kontakt:<br />
-                                    E-Mail: pascalhares@gmail.com
+                                    E-Mail: brutusaiswebapp@gmail.com
                                 </p>
                             </div>
 

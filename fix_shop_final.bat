@@ -9,7 +9,7 @@ if exist "public\assets\logo_video.mp4" (
     echo - Logo Video OK
 ) else (
     echo - Logo Video FEHLT! Kopiere Backup...
-    copy "C:\Users\pasca\Desktop\Eisenbund band\fotosvideos\grok-video-4a046914-0351-49d3-ba8c-b0d4fc4b016c.mp4" "public\assets\logo_video.mp4"
+    copy "C:\Users\pasca\Desktop\Eisenbund band\fotosvideos\grok-video-3eab7041-2174-47cd-b687-d616fadfe17a.mp4" "public\assets\logo_video.mp4"
 )
 
 if exist "public\assets\shop_bg.mp4" (

@@ -61,7 +61,7 @@ const HeroForge = () => (
             <div className="mt-12 w-full max-w-md mx-auto panel-border bg-black/80 p-1 shadow-[0_0_30px_rgba(234,88,12,0.3)]">
                 <iframe
                     style={{ borderRadius: '0px' }}
-                    src="https://open.spotify.com/embed/artist/50VTmE7iaxUVHGJgyNFEv6?utm_source=generator&theme=0"
+                    src="https://open.spotify.com/embed/artist/50VTmE7iaxUVHGJgyNFEv6?utm_source=generator&theme=0&autoplay=1"
                     width="100%"
                     height="152"
                     frameBorder="0"
