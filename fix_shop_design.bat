@@ -1,12 +1,12 @@
 @echo off
 echo ==========================================
-echo   EISENBUND PERFORMANCE UPDATE
+echo   EISENBUND SHOP DESIGN UPDATE
 echo ==========================================
 cd /d "%~dp0"
 
-echo [1/2] Staging Performance Fixes...
+echo [1/2] Staging Shop Design...
 git add .
-git commit -m "Perf: Enable video preloading (preload=auto)"
+git commit -m "Update: New Shop Design (Red/Black)"
 
 echo [2/2] Uploading...
 git push origin main
@@ -15,6 +15,6 @@ echo.
 echo ==========================================
 echo   FERTIG!
 echo   Lade die Seite neu (STRG + F5).
-echo   Videos sollten jetzt schneller starten.
+echo   Der Shop hat jetzt das neue Design.
 echo ==========================================
 pause
