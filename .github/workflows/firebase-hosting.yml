@@ -25,9 +25,23 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy to Firebase Hosting
+      - name: Deploy via Service Account (preferred)
+        if: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           channelId: live
+
+      - name: Deploy via CI Token (fallback)
+        if: ${{ secrets.FIREBASE_TOKEN && !secrets.FIREBASE_SERVICE_ACCOUNT }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          echo "Deploying with firebase-tools using FIREBASE_TOKEN..."
+          npx firebase-tools@latest deploy --only hosting --project "eisenbund-website" --token "$FIREBASE_TOKEN"
+
+      - name: Fail if no credentials
+        if: ${{ !secrets.FIREBASE_SERVICE_ACCOUNT && !secrets.FIREBASE_TOKEN }}
+        run: |
+          echo "No Firebase credentials found. Set FIREBASE_SERVICE_ACCOUNT or FIREBASE_TOKEN as repo secrets." && exit 1

@@ -56,13 +56,29 @@ Ich habe einen Actions-Workflow (`.github/workflows/firebase-hosting.yml`) hinzu
 1. **Firebase Service Account erstellen**
    - Console → Projekt auswählen → Einstellungen → Service-Accounts → "Privaten Schlüssel erstellen" (JSON herunterladen)
    - Diese JSON-Datei enthält Felder wie `client_email`, `private_key`, `project_id` etc.
-2. **GitHub Secret anlegen**
+3. **GitHub Secret anlegen (Service Account oder CI Token)**
+
+Option A — Service Account (empfohlen):
    - Repository → Settings → Secrets and variables → Actions → New repository secret
    - Name: `FIREBASE_SERVICE_ACCOUNT`
-   - Value: Inhalt der JSON-Datei (komplett, inklusive Zeilenumbrüche)
-3. **.firebaserc anpassen**
+   - Value: Inhalt der Service Account JSON-Datei (komplett, inklusive Zeilenumbrüche)
+
+Option B — CI Token (kein Service Account nötig):
+   1. Lokal: `npm i -g firebase-tools` (oder nutze `npx`)
+   2. Hole ein CI-Token mit:
+      ```bash
+      npx firebase login:ci
+      ```
+      Der Befehl öffnet den Browser zum Login und gibt ein Token zurück.
+   3. Lege ein Repository Secret an:
+      - Name: `FIREBASE_TOKEN`
+      - Value: Der ausgegebene Token-String
+
+4. **.firebaserc anpassen**
    - Ersetze `<YOUR_FIREBASE_PROJECT_ID>` mit deinem Firebase `project_id` (aus der JSON oder der Console)
-4. Push auf `main` → GitHub Actions wird auslösen und deployen
+5. Push auf `main` → GitHub Actions wird auslösen und deployen
+
+> Hinweis: Wenn sowohl `FIREBASE_SERVICE_ACCOUNT` als auch `FIREBASE_TOKEN` gesetzt sind, der Workflow nutzt zuerst den Service Account. Wenn keines gesetzt ist, schlägt der Build fehl und es gibt eine verständliche Fehlermeldung.
 
 > Hinweis: Das Secret `FIREBASE_SERVICE_ACCOUNT` enthält sensible Schlüssel. Teile es niemals öffentlich.
 
