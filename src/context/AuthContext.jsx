@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { auth, googleProvider } from '../lib/firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -39,42 +41,55 @@ export const AuthProvider = ({ children }) => {
     };
 
     const loginWithGoogle = async () => {
+        console.log('[AuthContext] loginWithGoogle called (REAL FIREBASE)');
         setLoading(true);
-        // Simulate Network Delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        const googleUser = {
-            id: 'google_' + Date.now(),
-            name: 'Google User',
-            email: 'google-user@gmail.com',
-            street: 'Silicon Valley 1',
-            city: '90210 Mountain View',
-            provider: 'google',
-            orders: []
-        };
-
-        // Check if exists or create
-        let users = [];
         try {
-            const stored = localStorage.getItem('eb_users');
-            users = stored ? JSON.parse(stored) : [];
-            if (!Array.isArray(users)) users = [];
-        } catch (e) {
-            users = [];
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+
+            console.log('[AuthContext] Firebase Login Success:', user);
+
+            const googleUser = {
+                id: user.uid,
+                name: user.displayName || 'Google User',
+                email: user.email,
+                street: 'Noch nicht hinterlegt',
+                city: 'Bitte ergänzen',
+                provider: 'google',
+                orders: []
+            };
+
+            // Sync with local storage to keep shop working
+            let users = [];
+            try {
+                const stored = localStorage.getItem('eb_users');
+                users = stored ? JSON.parse(stored) : [];
+                if (!Array.isArray(users)) users = [];
+            } catch (e) {
+                users = [];
+            }
+
+            const existing = users.find(u => u.email === googleUser.email);
+
+            // Only update if new, preserve existing orders/address
+            const finalUser = existing ? { ...existing, id: user.uid } : googleUser;
+
+            if (!existing) {
+                users.push(finalUser);
+                localStorage.setItem('eb_users', JSON.stringify(users));
+            }
+
+            setUser(finalUser);
+            localStorage.setItem('eb_session', finalUser.email);
+
+            setLoading(false);
+            return { success: true };
+        } catch (error) {
+            console.error('[AuthContext] Firebase Login error:', error);
+            setLoading(false);
+            return { success: false, error: error.message };
         }
-
-        const existing = users.find(u => u.email === googleUser.email);
-
-        if (!existing) {
-            users.push(googleUser);
-            localStorage.setItem('eb_users', JSON.stringify(users));
-        }
-
-        const activeUser = existing || googleUser;
-        setUser(activeUser);
-        localStorage.setItem('eb_session', activeUser.email);
-        setLoading(false);
-        return { success: true };
     };
 
     const register = (userData) => {
