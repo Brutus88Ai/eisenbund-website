@@ -2,10 +2,10 @@ import { Cpu, Disc, FileText, Users, ShoppingCart } from 'lucide-react';
 
 const Navigation = ({ activeTab, setActiveTab }) => {
     const tabs = [
-        { id: 'forge', label: 'DIE SCHMIEDE', icon: <Cpu size={18} /> },
+        { id: 'schmiede', label: 'DIE SCHMIEDE', icon: <Cpu size={18} /> },
         { id: 'production', label: 'PRODUKTION', icon: <Disc size={18} /> },
         { id: 'manifest', label: 'MANIFEST', icon: <FileText size={18} /> },
-        { id: 'union', label: 'DER BUND', icon: <Users size={18} /> },
+        { id: 'bund', label: 'DER BUND', icon: <Users size={18} /> },
         { id: 'shop', label: 'MERCH SHOP', icon: <ShoppingCart size={18} /> },
     ];
 
