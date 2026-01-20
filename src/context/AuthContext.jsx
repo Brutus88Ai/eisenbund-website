@@ -11,7 +11,8 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // v3.2 MIGRATION: Purge Legacy Data
+        console.log('[v3.3] Auth System Initializing...');
+        // v3.3 MIGRATION: Purge Legacy Data
         const session = localStorage.getItem('eb_session');
         if (session) {
             try {
@@ -19,20 +20,16 @@ export const AuthProvider = ({ children }) => {
                 const userData = users.find(u => u.email === session);
 
                 // DETECT LEGACY/FAKE USER
-                if (userData && (userData.name === 'Google User' || userData.id.toString().startsWith('google_'))) {
-                    console.log('[v3.2] Legacy User detected. Purging data.');
+                if (userData && (userData.name === 'Google User' || (userData.id && userData.id.toString().startsWith('google_')))) {
+                    console.log('[v3.3] Legacy User detected. Purging data.');
                     localStorage.removeItem('eb_session');
                     localStorage.removeItem('eb_users');
                     setUser(null);
-                    setLoading(false);
-                    return;
-                }
-
-                if (userData) {
+                } else if (userData) {
                     setUser(userData);
                 }
             } catch (e) {
-                console.error("Auth Error: Corrupted User Data", e);
+                console.error("Auth Error v3.3: Corrupted User Data", e);
                 localStorage.removeItem('eb_users');
             }
         }
