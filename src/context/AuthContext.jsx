@@ -11,18 +11,29 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check for active session
+        // v3.2 MIGRATION: Purge Legacy Data
         const session = localStorage.getItem('eb_session');
         if (session) {
             try {
                 const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
                 const userData = users.find(u => u.email === session);
+
+                // DETECT LEGACY/FAKE USER
+                if (userData && (userData.name === 'Google User' || userData.id.toString().startsWith('google_'))) {
+                    console.log('[v3.2] Legacy User detected. Purging data.');
+                    localStorage.removeItem('eb_session');
+                    localStorage.removeItem('eb_users');
+                    setUser(null);
+                    setLoading(false);
+                    return;
+                }
+
                 if (userData) {
                     setUser(userData);
                 }
             } catch (e) {
                 console.error("Auth Error: Corrupted User Data", e);
-                localStorage.removeItem('eb_users'); // Reset if corrupted
+                localStorage.removeItem('eb_users');
             }
         }
         setLoading(false);

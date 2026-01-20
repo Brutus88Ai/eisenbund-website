@@ -19,19 +19,38 @@ const Login = ({ onNavigate, onBack }) => {
     };
 
     const handleGoogleLogin = async () => {
-        setIsGoogleLoading(true);
-        await loginWithGoogle();
-        setIsGoogleLoading(false);
-        onNavigate('shop');
+        try {
+            setIsGoogleLoading(true);
+            setError('');
+            console.log('Starting Google Login...');
+
+            const result = await loginWithGoogle();
+            console.log('Google Login Result:', result);
+
+            if (result && result.success) {
+                console.log('Login successful, navigating to account...');
+                onNavigate('account'); // Go directly to account page
+            } else {
+                setError('Google Login fehlgeschlagen. Bitte erneut versuchen.');
+            }
+        } catch (err) {
+            console.error('Google Login Error:', err);
+            setError('Google Login Fehler: ' + err.message);
+        } finally {
+            setIsGoogleLoading(false);
+        }
     };
 
     return (
         <div className="min-h-screen pt-32 px-6 flex items-center justify-center bg-[#0d0d0d]">
             <div className="max-w-md w-full bg-[#1a1a1a] border border-[#333] p-8 animate-in zoom-in duration-300 relative shadow-2xl">
 
-                <h2 className="text-3xl text-white font-industrial mb-6 tracking-[0.2em] text-center">
+                <h2 className="text-3xl text-white font-industrial mb-2 tracking-[0.2em] text-center">
                     SYSTEM LOGIN
                 </h2>
+                <p className="text-[#8b0000] text-xs text-center mb-6 font-mono tracking-widest leading-loose">
+                    SYSTEM v3.3 (SYNC REPAIR ACTIVE)
+                </p>
 
                 {error && (
                     <div className="bg-red-900/20 border border-red-800 p-3 mb-6 text-red-500 text-xs flex items-center gap-2">
