@@ -56,7 +56,9 @@ export const AuthProvider = ({ children }) => {
         // Check if exists or create
         let users = [];
         try {
-            users = JSON.parse(localStorage.getItem('eb_users') || '[]');
+            const stored = localStorage.getItem('eb_users');
+            users = stored ? JSON.parse(stored) : [];
+            if (!Array.isArray(users)) users = [];
         } catch (e) {
             users = [];
         }
@@ -68,8 +70,9 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('eb_users', JSON.stringify(users));
         }
 
-        setUser(existing || googleUser);
-        localStorage.setItem('eb_session', googleUser.email);
+        const activeUser = existing || googleUser;
+        setUser(activeUser);
+        localStorage.setItem('eb_session', activeUser.email);
         setLoading(false);
         return { success: true };
     };

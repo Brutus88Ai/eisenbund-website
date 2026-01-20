@@ -49,7 +49,7 @@ const Account = ({ onNavigate }) => {
                             <div className="text-center py-12 text-stone-600">
                                 <p>KEINE AKTIVEN AUFTRÄGE.</p>
                                 <button onClick={() => onNavigate('shop')} className="text-[#8b0000] underline mt-2 text-xs uppercase">
-                                    Zum Zeughaus
+                                    ZUM MERCH SHOP
                                 </button>
                             </div>
                         ) : (
