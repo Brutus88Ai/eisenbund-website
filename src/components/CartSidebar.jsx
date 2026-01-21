@@ -11,38 +11,40 @@ const CartSidebar = ({ onCheckout }) => {
         <div className="fixed inset-0 z-[100] flex justify-end">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
                 onClick={() => setIsCartOpen(false)}
-            ></div>
+            />
 
             {/* Sidebar Panel */}
-            <div className="relative w-full max-w-md bg-[#0d0d0d] border-l-2 border-[#8b0000] shadow-[-10px_0_30px_rgba(139,0,0,0.2)] flex flex-col h-full animate-in slide-in-from-right duration-300">
+            <div className="relative w-full max-w-md bg-white/5 backdrop-blur-xl border-l border-white/20 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] flex flex-col h-full animate-in slide-in-from-right duration-300">
 
                 {/* Header */}
-                <div className="p-6 border-b border-[#333] flex items-center justify-between bg-black/50">
+                <div className="p-6 border-b border-white/10 flex items-center justify-between bg-black/40">
                     <h2 className="text-xl font-industrial text-white tracking-widest flex items-center gap-3">
                         <ShoppingCart size={20} className="text-[#8b0000]" />
                         WARENKORB
                     </h2>
                     <button
                         onClick={() => setIsCartOpen(false)}
-                        className="text-[#666] hover:text-white transition-colors"
+                        className="text-stone-400 hover:text-white transition-colors p-2 -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label="Schließen"
                     >
                         <X size={24} />
                     </button>
                 </div>
 
                 {/* Items List */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
                     {cartItems.length === 0 ? (
-                        <div className="text-center text-[#555] mt-10 font-mono">
-                            <p className="mb-4">LEERLAUF IM SYSTEM.</p>
-                            <p className="text-xs">FÜGE AUSRÜSTUNG HINZU.</p>
+                        <div className="text-center text-stone-500 mt-10">
+                            <ShoppingCart size={48} className="mx-auto mb-4 opacity-30" />
+                            <p className="font-mono mb-2">LEERLAUF IM SYSTEM.</p>
+                            <p className="text-xs">Füge Ausrüstung hinzu.</p>
                         </div>
                     ) : (
                         cartItems.map(item => (
-                            <div key={item.id} className="flex gap-4 bg-[#1a1a1a] p-3 border border-[#333]">
-                                <div className="w-20 h-20 bg-black border border-[#333] shrink-0">
+                            <div key={item.id} className="flex gap-4 rounded-lg bg-white/5 border border-white/10 p-4 hover:bg-white/10 transition-colors">
+                                <div className="w-20 h-20 bg-black/60 rounded-lg border border-white/10 shrink-0 overflow-hidden">
                                     <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="flex-1 flex flex-col justify-between">
@@ -52,16 +54,31 @@ const CartSidebar = ({ onCheckout }) => {
                                     </div>
 
                                     <div className="flex items-center justify-between mt-2">
-                                        <div className="flex items-center gap-3 bg-black border border-[#333] px-2 py-1">
-                                            <button onClick={() => updateQuantity(item.id, -1)} className="text-[#666] hover:text-white"><Minus size={12} /></button>
-                                            <span className="text-stone-300 font-mono text-xs w-4 text-center">{item.quantity}</span>
-                                            <button onClick={() => updateQuantity(item.id, 1)} className="text-[#666] hover:text-white"><Plus size={12} /></button>
+                                        {/* Quantity Controls - Touch Optimized */}
+                                        <div className="flex items-center gap-1 bg-black/60 rounded-lg border border-white/10 p-1">
+                                            <button
+                                                onClick={() => updateQuantity(item.id, -1)}
+                                                className="text-stone-400 hover:text-white transition-colors p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded hover:bg-white/10"
+                                                aria-label="Menge verringern"
+                                            >
+                                                <Minus size={14} />
+                                            </button>
+                                            <span className="text-white font-mono text-sm w-8 text-center">{item.quantity}</span>
+                                            <button
+                                                onClick={() => updateQuantity(item.id, 1)}
+                                                className="text-stone-400 hover:text-white transition-colors p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded hover:bg-white/10"
+                                                aria-label="Menge erhöhen"
+                                            >
+                                                <Plus size={14} />
+                                            </button>
                                         </div>
+
                                         <button
                                             onClick={() => removeFromCart(item.id)}
-                                            className="text-[#666] hover:text-red-500 transition-colors"
+                                            className="text-stone-500 hover:text-red-500 transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                            aria-label="Entfernen"
                                         >
-                                            <Trash2 size={16} />
+                                            <Trash2 size={18} />
                                         </button>
                                     </div>
                                 </div>
@@ -72,18 +89,18 @@ const CartSidebar = ({ onCheckout }) => {
 
                 {/* Footer / Checkout */}
                 {cartItems.length > 0 && (
-                    <div className="p-6 border-t border-[#333] bg-black/80 backdrop-blur-md">
+                    <div className="p-6 border-t border-white/10 bg-black/60 backdrop-blur-lg">
                         <div className="flex justify-between items-center mb-6 font-industrial text-xl">
                             <span className="text-stone-400">GESAMT:</span>
-                            <span className="text-[#8b0000]">{cartTotal.toFixed(2).replace('.', ',')} €</span>
+                            <span className="text-[#8b0000] text-2xl">{cartTotal.toFixed(2).replace('.', ',')} €</span>
                         </div>
                         <button
                             onClick={onCheckout}
-                            className="w-full bg-[#8b0000] hover:bg-[#a00000] text-white py-4 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all"
+                            className="w-full rounded-lg bg-[#8b0000] hover:bg-[#a00000] text-white py-4 font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all min-h-[52px] shadow-lg"
                         >
                             ZUR KASSE <ArrowRight size={18} />
                         </button>
-                        <p className="text-center text-[#444] text-[10px] mt-3 font-mono">
+                        <p className="text-center text-stone-500 text-[10px] mt-3 font-mono">
                             INKL. MWST. / ZZGL. VERSAND
                         </p>
                     </div>
