@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -16,11 +17,13 @@ const hasConfig = Boolean(firebaseConfig && firebaseConfig.apiKey && firebaseCon
 
 let app = null;
 let auth = null;
+let db = null;
 let googleProvider = null;
 
 if (hasConfig) {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
+    db = getFirestore(app);
     // Prefer persistent local sessions for the shop
     setPersistence(auth, browserLocalPersistence).catch(err => {
         console.warn('[firebase] setPersistence failed:', err && err.code ? err.code : err);
@@ -30,4 +33,4 @@ if (hasConfig) {
     console.warn('[firebase] Missing Firebase configuration (VITE_FIREBASE_*). Auth/Google login disabled.');
 }
 
-export { app, auth, googleProvider, hasConfig };
+export { app, auth, db, googleProvider, hasConfig };

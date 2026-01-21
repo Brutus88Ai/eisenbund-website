@@ -1,199 +1,248 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { auth, googleProvider, hasConfig } from '../lib/firebase';
-import { signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth, db, googleProvider, hasConfig } from '../lib/firebase';
+import {
+    signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
+    signOut,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    updateProfile
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
+// Konstanten
+const USERS_COLLECTION = 'users';
+const DEFAULT_ADDRESS = { street: 'Noch nicht hinterlegt', city: 'Bitte ergänzen' };
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        console.log('[v3.3] Auth System Initializing...');
-        // v3.3 MIGRATION: Purge Legacy Data
-        const session = localStorage.getItem('eb_session');
-        if (session) {
-            try {
-                const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
-                const userData = users.find(u => u.email === session);
+    // Firebase User zu lokalem User-Objekt konvertieren
+    const firebaseUserToLocal = async (firebaseUser) => {
+        if (!firebaseUser) return null;
 
-                // DETECT LEGACY/FAKE USER
-                if (userData && (userData.name === 'Google User' || (userData.id && userData.id.toString().startsWith('google_')))) {
-                    console.log('[v3.3] Legacy User detected. Purging data.');
-                    localStorage.removeItem('eb_session');
-                    localStorage.removeItem('eb_users');
-                    setUser(null);
-                } else if (userData) {
-                    setUser(userData);
+        const baseUser = {
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName || 'Rekrut',
+            email: firebaseUser.email,
+            provider: firebaseUser.providerData?.[0]?.providerId || 'email',
+            ...DEFAULT_ADDRESS,
+            orders: []
+        };
+
+        // Versuche zusätzliche Daten aus Firestore zu laden
+        if (hasConfig && db) {
+            try {
+                const userDoc = await getDoc(doc(db, USERS_COLLECTION, firebaseUser.uid));
+                if (userDoc.exists()) {
+                    const firestoreData = userDoc.data();
+                    return { ...baseUser, ...firestoreData, id: firebaseUser.uid };
                 }
             } catch (e) {
-                console.error("Auth Error v3.3: Corrupted User Data", e);
-                localStorage.removeItem('eb_users');
+                console.warn('[AuthContext] Firestore read failed:', e);
             }
         }
 
+        return baseUser;
+    };
+
+    // User-Daten in Firestore speichern
+    const saveUserToFirestore = async (uid, userData) => {
+        if (!hasConfig || !db) return;
+        try {
+            await setDoc(doc(db, USERS_COLLECTION, uid), {
+                name: userData.name,
+                email: userData.email,
+                street: userData.street || DEFAULT_ADDRESS.street,
+                city: userData.city || DEFAULT_ADDRESS.city,
+                orders: userData.orders || [],
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+        } catch (e) {
+            console.warn('[AuthContext] Firestore write failed:', e);
+        }
+    };
+
+    useEffect(() => {
+        console.log('[v4.0] Firebase Auth System Initializing...');
+
         let unsubscribe = null;
 
-        // After purge, check if we returned from an OAuth redirect flow
+        // Check for OAuth redirect result
         const checkRedirect = async () => {
             if (!hasConfig || !auth) return;
             try {
                 const result = await getRedirectResult(auth);
-                if (result && result.user) {
-                    // Reuse popup-success flow to normalize user data
-                    const firebaseUser = result.user;
-                    handleFirebaseSignIn(firebaseUser);
+                if (result?.user) {
+                    const localUser = await firebaseUserToLocal(result.user);
+                    setUser(localUser);
                 }
             } catch (e) {
                 console.error('[AuthContext] getRedirectResult error:', e);
-                try { localStorage.setItem('eb_last_auth_error', JSON.stringify({ time: Date.now(), source: 'getRedirectResult', code: e && e.code, message: e && e.message })); } catch (e2) {}
             }
         };
 
         checkRedirect();
 
-        // Listen to firebase auth state changes to keep local storage in sync
+        // Listen to firebase auth state changes
         if (hasConfig && auth) {
-            try {
-                unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-                    if (firebaseUser) {
-                        handleFirebaseSignIn(firebaseUser);
-                    } else {
-                        // If firebase sign-out occurs, and our local user was a google user, clear it
-                        setUser(prev => {
-                            if (prev && prev.provider === 'google') {
-                                localStorage.removeItem('eb_session');
-                                return null;
-                            }
-                            return prev;
-                        });
-                    }
-                }, (err) => {
-                    console.error('[AuthContext] onAuthStateChanged error:', err);
-                });
-            } catch (e) {
-                console.error('[AuthContext] Failed to attach auth listener:', e);
-            }
+            unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+                if (firebaseUser) {
+                    const localUser = await firebaseUserToLocal(firebaseUser);
+                    setUser(localUser);
+                } else {
+                    setUser(null);
+                }
+                setLoading(false);
+            }, (err) => {
+                console.error('[AuthContext] onAuthStateChanged error:', err);
+                setLoading(false);
+            });
+        } else {
+            setLoading(false);
         }
-
-        // initial load finished
-        setLoading(false);
 
         return () => {
             if (unsubscribe) unsubscribe();
         };
     }, []);
 
-    const login = (email, password) => {
-        const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
-        const validUser = users.find(u => u.email === email && u.password === password);
-
-        if (validUser) {
-            setUser(validUser);
-            localStorage.setItem('eb_session', email);
-            return { success: true };
-        }
-        return { success: false, error: 'Zugangsdaten ungültig.' };
-    };
-
-    // Helper to handle a Firebase user object (from popup or redirect)
-    const handleFirebaseSignIn = (user) => {
-        if (!user) return;
-
-        const googleUser = {
-            id: user.uid,
-            name: user.displayName || 'Google User',
-            email: user.email,
-            street: 'Noch nicht hinterlegt',
-            city: 'Bitte ergänzen',
-            provider: (user.providerData && user.providerData[0] && user.providerData[0].providerId) ? user.providerData[0].providerId : 'google',
-            orders: []
-        };
-
-        // Sync with local storage to keep shop working
-        let users = [];
-        try {
-            const stored = localStorage.getItem('eb_users');
-            users = stored ? JSON.parse(stored) : [];
-            if (!Array.isArray(users)) users = [];
-        } catch (e) {
-            users = [];
-        }
-
-        const existing = users.find(u => u.email === googleUser.email);
-        const finalUser = existing ? { ...existing, id: user.uid } : googleUser;
-
-        if (!existing) {
-            users.push(finalUser);
-            localStorage.setItem('eb_users', JSON.stringify(users));
-        }
-
-        setUser(finalUser);
-        localStorage.setItem('eb_session', finalUser.email);
-    };
-
-    const loginWithGoogle = async () => {
-        console.log('[AuthContext] loginWithGoogle called (REAL FIREBASE)');
+    // Email/Passwort Login
+    const login = async (email, password) => {
         if (!hasConfig || !auth) {
-            const msg = 'Firebase nicht konfiguriert. Bitte prüfen Sie VITE_FIREBASE_* Variablen.';
-            try { localStorage.setItem('eb_last_auth_error', JSON.stringify({ time: Date.now(), source: 'no-config', message: msg })); } catch (e) {}
-            return { success: false, error: msg };
+            return { success: false, error: 'Firebase nicht konfiguriert.' };
+        }
+
+        try {
+            const result = await signInWithEmailAndPassword(auth, email, password);
+            const localUser = await firebaseUserToLocal(result.user);
+            setUser(localUser);
+            return { success: true };
+        } catch (error) {
+            console.error('[AuthContext] Login error:', error);
+            const errorMessages = {
+                'auth/user-not-found': 'Kein Account mit dieser E-Mail gefunden.',
+                'auth/wrong-password': 'Falsches Passwort.',
+                'auth/invalid-email': 'Ungültige E-Mail-Adresse.',
+                'auth/too-many-requests': 'Zu viele Versuche. Bitte später erneut versuchen.',
+                'auth/invalid-credential': 'Zugangsdaten ungültig.'
+            };
+            return {
+                success: false,
+                error: errorMessages[error.code] || 'Login fehlgeschlagen.',
+                code: error.code
+            };
+        }
+    };
+
+    // Email/Passwort Registrierung
+    const register = async (userData) => {
+        if (!hasConfig || !auth) {
+            return { success: false, error: 'Firebase nicht konfiguriert.' };
+        }
+
+        try {
+            const result = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+
+            // Display Name setzen
+            await updateProfile(result.user, { displayName: userData.name });
+
+            // User-Daten in Firestore speichern
+            await saveUserToFirestore(result.user.uid, userData);
+
+            const localUser = {
+                id: result.user.uid,
+                name: userData.name,
+                email: userData.email,
+                street: userData.street || DEFAULT_ADDRESS.street,
+                city: userData.city || DEFAULT_ADDRESS.city,
+                provider: 'email',
+                orders: []
+            };
+
+            setUser(localUser);
+            return { success: true };
+        } catch (error) {
+            console.error('[AuthContext] Register error:', error);
+            const errorMessages = {
+                'auth/email-already-in-use': 'Diese E-Mail ist bereits registriert.',
+                'auth/weak-password': 'Passwort muss mindestens 6 Zeichen haben.',
+                'auth/invalid-email': 'Ungültige E-Mail-Adresse.'
+            };
+            return {
+                success: false,
+                error: errorMessages[error.code] || 'Registrierung fehlgeschlagen.',
+                code: error.code
+            };
+        }
+    };
+
+    // Passwort-Reset
+    const resetPassword = async (email) => {
+        if (!hasConfig || !auth) {
+            return { success: false, error: 'Firebase nicht konfiguriert.' };
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            return { success: true };
+        } catch (error) {
+            console.error('[AuthContext] Password reset error:', error);
+            const errorMessages = {
+                'auth/user-not-found': 'Kein Account mit dieser E-Mail gefunden.',
+                'auth/invalid-email': 'Ungültige E-Mail-Adresse.'
+            };
+            return {
+                success: false,
+                error: errorMessages[error.code] || 'Passwort-Reset fehlgeschlagen.',
+                code: error.code
+            };
+        }
+    };
+
+    // Google Login
+    const loginWithGoogle = async () => {
+        if (!hasConfig || !auth) {
+            return { success: false, error: 'Firebase nicht konfiguriert.' };
         }
 
         setLoading(true);
 
         try {
             const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-            console.log('[AuthContext] Firebase Login Success (popup):', user);
-            handleFirebaseSignIn(user);
+            const localUser = await firebaseUserToLocal(result.user);
+
+            // User-Daten in Firestore speichern (merge für bestehende Daten)
+            await saveUserToFirestore(result.user.uid, localUser);
+
+            setUser(localUser);
             setLoading(false);
             return { success: true };
         } catch (error) {
-            // Provide richer logging and fallback to redirect flow for deployed websites
-            console.error('[AuthContext] Firebase Login error (popup):', error && error.code, error && error.message, error);
-            try {
-                localStorage.setItem('eb_last_auth_error', JSON.stringify({
-                    time: Date.now(),
-                    source: 'popup',
-                    code: error && error.code,
-                    message: error && error.message,
-                    stack: error && error.stack ? String(error.stack) : null
-                }));
-            } catch (e) {
-                // ignore storage errors
-            }
+            console.error('[AuthContext] Google Login error:', error);
 
-            // Common popup issues — fallback to redirect-based OAuth
+            // Fallback zu Redirect bei Popup-Problemen
             const popupErrorCodes = [
                 'auth/popup-blocked',
                 'auth/popup-closed-by-user',
-                'auth/cancelled-popup-request',
-                'auth/web-storage-unsupported'
+                'auth/cancelled-popup-request'
             ];
 
-            if (error && popupErrorCodes.includes(error.code)) {
+            if (popupErrorCodes.includes(error.code)) {
                 try {
-                    console.warn('[AuthContext] Falling back to signInWithRedirect due to popup error:', error.code);
                     await signInWithRedirect(auth, googleProvider);
-                    // Note: signInWithRedirect will redirect away — the result will be handled on return via getRedirectResult
-                    try { localStorage.setItem('eb_last_auth_error', JSON.stringify({ time: Date.now(), source: 'redirect-fallback', code: error.code, message: error.message })); } catch (e) {}
                     return { success: 'redirect' };
                 } catch (redirectErr) {
-                    console.error('[AuthContext] signInWithRedirect failed:', redirectErr);
-                    try {
-                        localStorage.setItem('eb_last_auth_error', JSON.stringify({
-                            time: Date.now(),
-                            source: 'redirect',
-                            code: redirectErr && redirectErr.code,
-                            message: redirectErr && redirectErr.message,
-                            stack: redirectErr && redirectErr.stack ? String(redirectErr.stack) : null
-                        }));
-                    } catch (e) {}
                     setLoading(false);
-                    return { success: false, error: redirectErr.message, code: redirectErr.code };
+                    return { success: false, error: redirectErr.message };
                 }
             }
 
@@ -202,33 +251,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const register = (userData) => {
-        const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
-
-        if (users.find(u => u.email === userData.email)) {
-            return { success: false, error: 'E-Mail bereits registriert.' };
-        }
-
-        const newUser = {
-            ...userData,
-            id: Date.now(),
-            orders: []
-        };
-
-        users.push(newUser);
-        localStorage.setItem('eb_users', JSON.stringify(users));
-
-        // Auto-login
-        setUser(newUser);
-        localStorage.setItem('eb_session', newUser.email);
-
-        return { success: true };
-    };
-
+    // Logout
     const logout = async () => {
         setUser(null);
-        localStorage.removeItem('eb_session');
-        // If a firebase user exists, sign them out as well
         if (hasConfig && auth) {
             try {
                 await signOut(auth);
@@ -238,15 +263,29 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const updateUser = (updatedData) => {
-        const users = JSON.parse(localStorage.getItem('eb_users') || '[]');
-        const updatedUsers = users.map(u => u.email === user.email ? { ...u, ...updatedData } : u);
-        localStorage.setItem('eb_users', JSON.stringify(updatedUsers));
-        setUser({ ...user, ...updatedData });
+    // User-Daten aktualisieren
+    const updateUser = async (updatedData) => {
+        if (!user) return;
+
+        const newUser = { ...user, ...updatedData };
+        setUser(newUser);
+
+        // In Firestore speichern
+        await saveUserToFirestore(user.id, newUser);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loginWithGoogle, updateUser, loading, hasConfig }}>
+        <AuthContext.Provider value={{
+            user,
+            login,
+            register,
+            logout,
+            loginWithGoogle,
+            resetPassword,
+            updateUser,
+            loading,
+            hasConfig
+        }}>
             {!loading && children}
         </AuthContext.Provider>
     );
