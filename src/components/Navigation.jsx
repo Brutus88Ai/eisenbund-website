@@ -1,5 +1,17 @@
 import { Cpu, Disc, FileText, Users, ShoppingCart } from 'lucide-react';
 
+// Domain Configuration
+const DOMAINS = {
+    main: 'https://eisenbund.de',
+    shop: 'https://eisenbund.shop'
+};
+
+// Tabs that belong to the MAIN domain (eisenbund.de)
+const MAIN_DOMAIN_TABS = ['schmiede', 'production', 'manifest', 'bund'];
+
+// Tabs that belong to the SHOP domain (eisenbund.shop)
+const SHOP_DOMAIN_TABS = ['shop', 'checkout', 'login', 'register', 'account'];
+
 const Navigation = ({ activeTab, setActiveTab }) => {
     const tabs = [
         { id: 'schmiede', label: 'DIE SCHMIEDE', icon: <Cpu size={18} /> },
@@ -10,16 +22,33 @@ const Navigation = ({ activeTab, setActiveTab }) => {
     ];
 
     const handleTabClick = (tab) => {
-        // Domain Redirect for Shop
-        if (tab.id === 'shop') {
-            const isProd = !window.location.hostname.includes('localhost');
-            const isShopDomain = window.location.hostname.includes('eisenbund.shop');
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+        const isShopDomain = hostname.includes('eisenbund.shop');
+        const isMainDomain = hostname.includes('eisenbund.de');
 
-            if (isProd && !isShopDomain) {
-                window.location.href = 'https://eisenbund.shop';
-                return;
-            }
+        // Skip domain logic in development
+        if (isLocalhost) {
+            setActiveTab(tab.id);
+            return;
         }
+
+        const targetIsMainTab = MAIN_DOMAIN_TABS.includes(tab.id);
+        const targetIsShopTab = SHOP_DOMAIN_TABS.includes(tab.id);
+
+        // CASE 1: On SHOP domain, clicking a MAIN tab → Redirect to eisenbund.de
+        if (isShopDomain && targetIsMainTab) {
+            window.location.href = `${DOMAINS.main}#${tab.id}`;
+            return;
+        }
+
+        // CASE 2: On MAIN domain, clicking a SHOP tab → Redirect to eisenbund.shop
+        if (isMainDomain && targetIsShopTab) {
+            window.location.href = DOMAINS.shop;
+            return;
+        }
+
+        // CASE 3: Same domain navigation → Just update state
         setActiveTab(tab.id);
     };
 

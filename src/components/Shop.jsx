@@ -110,7 +110,7 @@ const Shop = ({ onNavigate }) => {
                         MERCH SHOP
                     </h1>
                     <nav className="mt-4 flex justify-center gap-8 text-xs md:text-sm font-bold uppercase tracking-widest">
-                        <a href="https://www.eisenbund.de/" className="text-[#8b0000] hover:text-white transition-colors no-underline flex items-center gap-2">
+                        <a href="https://eisenbund.de" className="text-[#8b0000] hover:text-white transition-colors no-underline flex items-center gap-2">
                             &lt; BACK TO BASE
                         </a>
                         <span className="text-[#333]">|</span>

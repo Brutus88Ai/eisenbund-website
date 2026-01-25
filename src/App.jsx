@@ -25,13 +25,52 @@ const LoadingFallback = () => (
     </div>
 );
 
+// Domain Configuration (outside component to avoid re-creation)
+const DOMAINS = {
+    main: 'https://eisenbund.de',
+    shop: 'https://eisenbund.shop'
+};
+const MAIN_DOMAIN_TABS = ['schmiede', 'production', 'manifest', 'bund'];
+const SHOP_DOMAIN_TABS = ['shop', 'checkout', 'login', 'register', 'account'];
+
 const App = () => {
-    // Initialize state from hash or default to 'schmiede'
+
+    // Initialize state with domain-aware routing
     const getInitialTab = () => {
         const hash = window.location.hash.replace('#', '');
-        if (window.location.hostname.includes('shop') || window.location.hostname.includes('store')) {
-            return 'shop';
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+        const isShopDomain = hostname.includes('eisenbund.shop');
+        const isMainDomain = hostname.includes('eisenbund.de');
+
+        // Development: allow all tabs
+        if (isLocalhost) {
+            return hash || 'schmiede';
         }
+
+        // SHOP DOMAIN: Force shop-only tabs
+        if (isShopDomain) {
+            // If hash points to a main-domain tab, redirect to main domain
+            if (hash && MAIN_DOMAIN_TABS.includes(hash)) {
+                window.location.href = `${DOMAINS.main}#${hash}`;
+                return 'shop'; // Fallback while redirecting
+            }
+            // Valid shop tab or default to 'shop'
+            return SHOP_DOMAIN_TABS.includes(hash) ? hash : 'shop';
+        }
+
+        // MAIN DOMAIN: Force main-only tabs
+        if (isMainDomain) {
+            // If hash points to a shop-domain tab, redirect to shop domain
+            if (hash && SHOP_DOMAIN_TABS.includes(hash)) {
+                window.location.href = DOMAINS.shop;
+                return 'schmiede'; // Fallback while redirecting
+            }
+            // Valid main tab or default to 'schmiede'
+            return MAIN_DOMAIN_TABS.includes(hash) ? hash : 'schmiede';
+        }
+
+        // Fallback for unknown domains
         return hash || 'schmiede';
     };
 
@@ -55,14 +94,40 @@ const App = () => {
         }
     }, [activeTab]);
 
-    // Browser Back Button
+    // Browser Back Button (with domain enforcement)
     useEffect(() => {
         const handlePopState = () => {
             const hash = window.location.hash.replace('#', '');
+            const hostname = window.location.hostname;
+            const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+            const isShopDomain = hostname.includes('eisenbund.shop');
+            const isMainDomain = hostname.includes('eisenbund.de');
+
+            // Development: allow all tabs
+            if (isLocalhost) {
+                if (hash && hash !== activeTab) {
+                    setActiveTab(hash);
+                } else if (!hash) {
+                    setActiveTab('schmiede');
+                }
+                return;
+            }
+
+            // Enforce domain separation on back navigation
+            if (isShopDomain && MAIN_DOMAIN_TABS.includes(hash)) {
+                window.location.href = `${DOMAINS.main}#${hash}`;
+                return;
+            }
+            if (isMainDomain && SHOP_DOMAIN_TABS.includes(hash)) {
+                window.location.href = DOMAINS.shop;
+                return;
+            }
+
+            // Normal back navigation within same domain
             if (hash && hash !== activeTab) {
                 setActiveTab(hash);
             } else if (!hash) {
-                setActiveTab('schmiede');
+                setActiveTab(isShopDomain ? 'shop' : 'schmiede');
             }
         };
         window.addEventListener('popstate', handlePopState);
